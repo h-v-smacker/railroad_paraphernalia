@@ -5,6 +5,8 @@ This mod introduces railroad equipment, mostly from the 1986 signaling manual fo
 An accessory that makes a railroad switch look professional. Also helps
 users of advtrains without train_operator privilege to operate switches in style.
 
+The point levers are actually nothing but mesecon switches which look fancy.
+
 ### With black&white arrow:
 ```
 {'dye:black', 'dye:white', 'dye:black'},
@@ -32,12 +34,14 @@ way. Isn't synced with advtrains ndb, so works only with manned trains for now.
 ```
 
 ## Shunting signal
-A small signal for shunting operations. Blue = shunting prohibited, white = shutung allowed.
+A small signal for shunting operations. Blue = shunting prohibited, white = shunting allowed.
 ```
 {'', 'dye:white', ''},
 {'', 'dye:blue', ''},
 {'', 'default:stone', ''},
 ```
+
+It accepts mesecon signals (on = switch to white, off = switch to blue)
 
 ## Delimiting post: 
 It is placed near switches to show the point past which the locomotive may
