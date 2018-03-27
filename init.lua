@@ -456,6 +456,7 @@ minetest.register_node("railroad_paraphernalia:shunting_signal_act", {
 	on_place = minetest.rotate_node,
 	paramtype = "light",
 	paramtype2 = "facedir",
+	light_source = 1,
 	mesecons = {
                   effector = {
 				rules=mesecon.rules.shunting_signal,
