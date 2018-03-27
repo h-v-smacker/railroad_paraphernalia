@@ -25,7 +25,7 @@ While it should be a light source, the details of the model cannot be seen even 
 emits the minimal amount of light.
 
 ## Track Blocker
-Prevents a tran from passing a track segment by placing a "block" in its
+Prevents a train from passing a track segment by placing a "block" in its
 way. Isn't synced with advtrains ndb, so works only with manned trains for now.
 ```
 {'dye:white', 'dye:black', 'dye:white'},
