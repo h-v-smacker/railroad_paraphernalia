@@ -129,7 +129,8 @@ minetest.register_node("railroad_paraphernalia:switch_with_arrow_act", {
 			gain = 0.3,
 		})
 		mesecon.receptor_off(pos, switch_get_rules(minetest.get_node(pos).param2))
-	end
+	end,
+	drop = "railroad_paraphernalia:switch_with_arrow"
 })
 
 minetest.register_craft({
@@ -228,7 +229,8 @@ minetest.register_node("railroad_paraphernalia:switch_with_lamp_act", {
 			gain = 0.3,
 		})
 		mesecon.receptor_off(pos, switch_get_rules(minetest.get_node(pos).param2))
-	end
+	end,
+	drop = "railroad_paraphernalia:switch_with_lamp"
 })
 
 	
@@ -394,7 +396,8 @@ minetest.register_node("railroad_paraphernalia:track_blocker_act", {
 			gain = 0.3,
 		})
 		mesecon.receptor_off(pos, switch_get_rules(minetest.get_node(pos).param2))
-	end
+	end,
+	drop = "railroad_paraphernalia:track_blocker"
 })
 	
 minetest.register_craft({
@@ -472,7 +475,8 @@ minetest.register_node("railroad_paraphernalia:shunting_signal_act", {
 			max_hear_distance = 20,
 			gain = 0.3,
 		})
-	end
+	end,
+	drop = "railroad_paraphernalia:shunting_signal"
 })
 
 
