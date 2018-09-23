@@ -87,7 +87,8 @@ minetest.register_node("railroad_paraphernalia:switch_with_arrow", {
 			gain = 0.3,
 		})
 		mesecon.receptor_on(pos, switch_get_rules(minetest.get_node(pos).param2))
-	end
+	end,
+	drop = "railroad_paraphernalia:switch_with_arrow"
 })
 
 minetest.register_node("railroad_paraphernalia:switch_with_arrow_act", {
@@ -186,7 +187,8 @@ minetest.register_node("railroad_paraphernalia:switch_with_lamp", {
 			gain = 0.3,
 		})
 		mesecon.receptor_on(pos, switch_get_rules(minetest.get_node(pos).param2))
-	end
+	end,
+	drop = "railroad_paraphernalia:switch_with_lamp"
 })
 
 
@@ -355,7 +357,8 @@ minetest.register_node("railroad_paraphernalia:track_blocker", {
 			gain = 0.3,
 		})
 		mesecon.receptor_on(pos, switch_get_rules(minetest.get_node(pos).param2))
-	end
+	end,
+	drop = "railroad_paraphernalia:track_blocker"
 })
 
 minetest.register_node("railroad_paraphernalia:track_blocker_act", {
@@ -441,7 +444,16 @@ minetest.register_node("railroad_paraphernalia:shunting_signal", {
 			max_hear_distance = 20,
 			gain = 0.3,
 		})
-	end
+	end,
+	luaautomation = {
+		getstate = "off",
+		setstate = function(pos, node, newstate)
+			if newstate == "on" then
+				advtrains.ndb.swap_node(pos, {name = "railroad_paraphernalia:shunting_signal_act", param2 = node.param2}, true)
+			end
+		end,
+	},
+	drop = "railroad_paraphernalia:shunting_signal"
 })
 	
 	
@@ -476,6 +488,14 @@ minetest.register_node("railroad_paraphernalia:shunting_signal_act", {
 			gain = 0.3,
 		})
 	end,
+	luaautomation = {
+		getstate = "on",
+		setstate = function(pos, node, newstate)
+			if newstate == "off" then
+				advtrains.ndb.swap_node(pos, {name = "railroad_paraphernalia:shunting_signal", param2 = node.param2}, true)
+			end
+		end,
+	},
 	drop = "railroad_paraphernalia:shunting_signal"
 })
 
