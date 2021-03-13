@@ -80,6 +80,9 @@ minetest.register_node("railroad_paraphernalia:switch_with_arrow", {
 		mesecon.receptor_off(pos, switch_get_rules(minetest.get_node(pos).param2))
 	end,
 	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
 		minetest.set_node(pos, { name = "railroad_paraphernalia:switch_with_arrow_act", param2 = minetest.get_node(pos).param2 } )
 		minetest.sound_play("piston_extend", {
 			pos = pos,
@@ -123,6 +126,9 @@ minetest.register_node("railroad_paraphernalia:switch_with_arrow_act", {
 		}
 	},
 	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
 		minetest.set_node(pos, { name = "railroad_paraphernalia:switch_with_arrow", param2 = minetest.get_node(pos).param2 } )
 		minetest.sound_play("piston_retract", {
 			pos = pos,
@@ -180,6 +186,9 @@ minetest.register_node("railroad_paraphernalia:switch_with_lamp", {
 		mesecon.receptor_off(pos, switch_get_rules(minetest.get_node(pos).param2))
 	end,
 	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
 		minetest.set_node(pos, { name = "railroad_paraphernalia:switch_with_lamp_act", param2 = minetest.get_node(pos).param2 } )
 		minetest.sound_play("piston_extend", {
 			pos = pos,
@@ -224,6 +233,9 @@ minetest.register_node("railroad_paraphernalia:switch_with_lamp_act", {
 		}
 	},
 	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
 		minetest.set_node(pos, { name = "railroad_paraphernalia:switch_with_lamp", param2 = minetest.get_node(pos).param2 } )
 		minetest.sound_play("piston_retract", {
 			pos = pos,
@@ -350,6 +362,9 @@ minetest.register_node("railroad_paraphernalia:track_blocker", {
 		mesecon.receptor_off(pos, switch_get_rules(minetest.get_node(pos).param2))
 	end,
 	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
 		minetest.set_node(pos, { name = "railroad_paraphernalia:track_blocker_act", param2 = minetest.get_node(pos).param2 } )
 		minetest.sound_play("piston_extend", {
 			pos = pos,
@@ -392,6 +407,9 @@ minetest.register_node("railroad_paraphernalia:track_blocker_act", {
 	}},
 	walkable = true,
 	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
 		minetest.set_node(pos, { name = "railroad_paraphernalia:track_blocker", param2 = minetest.get_node(pos).param2 } )
 		minetest.sound_play("piston_retract", {
 			pos = pos,
