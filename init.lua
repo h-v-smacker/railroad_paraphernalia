@@ -520,10 +520,21 @@ minetest.register_node("railroad_paraphernalia:limit_post", {
 				 fixed = {{-0.33, -0.5, -0.33, 0.33, 0.4, 0.33}}
 				 },
 	collisionbox = {-0.33, -0.5, -0.33, 0.33, 0.4, 0.33},
-	groups = {snappy=1, choppy=2, oddly_breakable_by_hand=2, flammable=3},
+	groups = {
+		snappy=1, choppy=2, oddly_breakable_by_hand=2, flammable=3,
+		advtrains_signal = 1, save_in_at_nodedb = 1
+	},
 	on_place = minetest.rotate_node,
 	paramtype = "light",
-	paramtype2 = "facedir"
+	paramtype2 = "facedir",
+	sunlight_propagates = true,
+	advtrains = {
+		get_aspect = function(pos, node)
+			return {main = false, shunt = false}
+		end
+	},
+	on_rightclick = advtrains.interlocking.signal_rc_handler,
+	can_dig = advtrains.interlocking.signal_can_dig,
 })
 
 minetest.register_craft({
