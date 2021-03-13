@@ -413,92 +413,109 @@ minetest.register_craft({
 })
 	
 -- -------------------------
+-- SHUNT SIGNAL
 
+-- 'tracktype' here actually just means something changeable with the trackworker
+advtrains.trackplacer.register_tracktype("railroad_paraphernalia:shunting_signal")
 
-minetest.register_node("railroad_paraphernalia:shunting_signal", {
+local supported_aspects = {
+	main = {false},
+	shunt = nil
+}
+
+local function gen_setaspect(rot)
+	return function(pos, node, asp)
+		local newstate = asp.shunt and "act" or "off"
+		advtrains.ndb.swap_node(pos,
+				{name="railroad_paraphernalia:shunting_signal_"..newstate.."_"..rot,
+				param2 = node.param2})
+	end
+end
+
+minetest.register_alias("railroad_paraphernalia:shunting_signal",
+		"railroad_paraphernalia:shunting_signal_off_0")
+minetest.register_alias("railroad_paraphernalia:shunting_signal_act",
+		"railroad_paraphernalia:shunting_signal_act_0")
+
+for _, rot in ipairs({"0","30","45","60"}) do
+	for typ, prts in pairs({
+		["off"] = {tile = "blue", atlatc_state = "off", swapnode = "act",
+		swapstate = "on", asp = { main = false, shunt = false}},
+		["act"] = {tile = "white", atlatc_state = "on", swapnode = "off",
+		swapstate = "off", asp = { main = false, shunt = true}}
+	}) do
+
+local nodename = "railroad_paraphernalia:shunting_signal_"..typ.."_"..rot
+local swapnode = "railroad_paraphernalia:shunting_signal_"..prts.swapnode.."_"..rot
+minetest.register_node(nodename, {
 	description = "Shunting signal",
 	drawtype = "mesh",
-	mesh = "shunting_signal.b3d",
-	tiles = { "shunting_signal_blue.png" },
-	selection_box = { type = "fixed",
-				 fixed = {{-0.33, -0.5, -0.33, 0.33, 0.4, 0.33}}
-				 },
+	mesh = "shunting_signal_"..rot..".b3d",
+	tiles = { "shunting_signal_"..prts.tile..".png" },
+	selection_box = {
+		type = "fixed",
+		fixed = {{-0.33, -0.5, -0.33, 0.33, 0.4, 0.33}}
+	},
 	collisionbox = {-0.33, -0.5, -0.33, 0.33, 0.4, 0.33},
-	groups = {snappy=1, choppy=2, oddly_breakable_by_hand=2, flammable=3, not_blocking_trains = 1},
+	groups = {
+		snappy=1, choppy=2, oddly_breakable_by_hand=2, flammable=3,
+		not_blocking_trains = 1,
+		advtrains_signal = 2,
+		save_in_at_nodedb = 1
+	},
 	on_place = minetest.rotate_node,
+	hide_in_creative = not (typ == "off" or rot == "0"),
 	paramtype = "light",
 	paramtype2 = "facedir",
 	light_source = 1,
 	mesecons = {
-                  effector = {
-				rules=mesecon.rules.shunting_signal,
-				action_on = function (pos, node)
-					minetest.swap_node(pos, {name = "railroad_paraphernalia:shunting_signal_act", param2 = node.param2}, true)
-				end
-			}
+		effector = {
+			rules = mesecon.rules.shunting_signal,
+			action_on = (typ == "off" and function(pos, node)
+				advtrains.ndb.swap_node(pos, {name = swapnode, param2 = node.param2}, true)
+			end) or nil,
+			action_off = (typ == "act" and function (pos, node)
+				advtrains.ndb.swap_node(pos, {name = swapnode, param2 = node.param2}, true)
+			end) or nil,
+		},
 	},
-	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
-		minetest.set_node(pos, { name = "railroad_paraphernalia:shunting_signal_act", param2 = minetest.get_node(pos).param2 } )
+	on_rightclick = advtrains.interlocking and advtrains.interlocking.signal_rc_handler or
+	function(pos, node, player, itemstack, pointed_thing)
+		if not advtrains.check_turnout_signal_protection(pos, player:get_player_name()) then
+			return
+		end
+		minetest.set_node(pos, {name = swapnode, param2 = advtrains.ndb.get_node(pos).param2} )
 		minetest.sound_play("piston_extend", {
 			pos = pos,
 			max_hear_distance = 20,
 			gain = 0.3,
 		})
 	end,
-	luaautomation = {
-		getstate = "off",
+	can_dig = advtrains.interlocking and advtrains.interlocking.signal_can_dig,
+	advtrains = {
+		set_aspect = gen_setaspect(rot),
+		get_aspect = function(pos, node)
+			return prts.asp
+		end,
+		supported_aspects = supported_aspects,
+		getstate = prts.atlatc_state,
 		setstate = function(pos, node, newstate)
-			if newstate == "on" then
-				advtrains.ndb.swap_node(pos, {name = "railroad_paraphernalia:shunting_signal_act", param2 = node.param2}, true)
+			if newstate == prts.swapstate then
+				advtrains.ndb.swap_node(pos, {name = swapnode, param2 = node.param2}, true)
 			end
 		end,
 	},
-	drop = "railroad_paraphernalia:shunting_signal"
-})
-	
-	
-
-minetest.register_node("railroad_paraphernalia:shunting_signal_act", {
-	--description = "Shunting signal",
-	drawtype = "mesh",
-	mesh = "shunting_signal.b3d",
-	tiles = { "shunting_signal_white.png" },
-	selection_box = { type = "fixed",
-				 fixed = {{-0.33, -0.5, -0.33, 0.33, 0.4, 0.33}}
-				 },
-	collisionbox = {-0.33, -0.5, -0.33, 0.33, 0.4, 0.33},
-	groups = {snappy=1, choppy=2, oddly_breakable_by_hand=2, flammable=3, not_in_creative_inventory=1, not_blocking_trains = 1},
-	on_place = minetest.rotate_node,
-	paramtype = "light",
-	paramtype2 = "facedir",
-	light_source = 1,
-	mesecons = {
-                  effector = {
-				rules=mesecon.rules.shunting_signal,
-				action_off = function (pos, node)
-					minetest.swap_node(pos, {name = "railroad_paraphernalia:shunting_signal", param2 = node.param2})
-				end
-			}
-	},
-	on_rightclick = function (pos, node, player, itemstack, pointed_thing)
-		minetest.set_node(pos, { name = "railroad_paraphernalia:shunting_signal", param2 = minetest.get_node(pos).param2 } )
-		minetest.sound_play("piston_extend", {
-			pos = pos,
-			max_hear_distance = 20,
-			gain = 0.3,
-		})
-	end,
-	luaautomation = {
-		getstate = "on",
-		setstate = function(pos, node, newstate)
-			if newstate == "off" then
-				advtrains.ndb.swap_node(pos, {name = "railroad_paraphernalia:shunting_signal", param2 = node.param2}, true)
-			end
-		end,
-	},
-	drop = "railroad_paraphernalia:shunting_signal"
+	at_nnpref = "shunting_signal",
+	at_suffix = typ,
+	at_rotation = rot,
+	drop = "railroad_paraphernalia:shunting_signal_0",
 })
 
+advtrains.trackplacer.add_worked("railroad_paraphernalia:shunting_signal", typ,
+		"_" .. rot, "_" .. prts.swapnode)
+
+end
+end
 
 minetest.register_craft({
 	output = 'railroad_paraphernalia:shunting_signal',
@@ -533,8 +550,8 @@ minetest.register_node("railroad_paraphernalia:limit_post", {
 			return {main = false, shunt = false}
 		end
 	},
-	on_rightclick = advtrains.interlocking.signal_rc_handler,
-	can_dig = advtrains.interlocking.signal_can_dig,
+	on_rightclick = advtrains.interlocking and advtrains.interlocking.signal_rc_handler,
+	can_dig = advtrains.interlocking and advtrains.interlocking.signal_can_dig,
 })
 
 minetest.register_craft({
